@@ -16,7 +16,7 @@
               <a class="nav-link" href="#">Link</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Logout</a>
+              <a class="nav-link" href="/users/logout">Logout</a>
             </li>
           </ul>
           <form class="form-inline mt-2 mt-md-0">
@@ -25,4 +25,9 @@
           </form>
         </div>
       </nav>
+      <div class="container">
+        <div class="starter-template">
+          <h1 style="color: white;">Welcome <%= user.name %>  </h1>
+        </div>
+      </div>
 <%- include('includes/footer') %>  

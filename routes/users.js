@@ -68,10 +68,57 @@ router.post('/register', function(req, res){
                 })
             });
         });
-
-     
-
     }
 });
+
+passport.serializeUser(function(user,done){
+    done(null, user._id);
+});
+
+passport.deserializeUser(function(id,done){
+   db.users.findOne({_id: mongojs.ObjectID(id)}, function(err, user){
+       done(err, user);
+   })
+})
+
+passport.use(new LocalStrategy(
+    function(username, password, done){
+        db.users.findOne({username: username}, function(err, user){
+            if(err){
+                return done(err);
+            }
+            if(!user){
+                return done(null, false, {message: 'Incorret username'});
+
+            }
+            bcrypt.compare(password, user.password, function(err, match){
+                if(err){
+                    return done(err);
+                }
+                if(match){
+                    return done(null, user);
+                }
+                else{
+                    return done(null, false, {message: 'Incorret password'})
+                }
+            })
+        })
+    }
+))
+//login Post
+router.post('/login',
+    passport.authenticate('local', {
+        successRedirect:'/',
+        failureRedirect: '/users/login',
+        failureFlash: 'Invalid Username or Password'}), function (req, res) {
+            console.log('Auth Successfull');
+            res.redirect('/'); 
+        });
+
+router.get('/logout', function(req,res) {
+    req.logout();
+    req.flash('success', 'You have logged out');
+    res.redirect('/users/login');   
+})
 
 module.exports =router;
